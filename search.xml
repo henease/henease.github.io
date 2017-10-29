@@ -3,48 +3,6 @@
   
     
     <entry>
-      <title><![CDATA[new test]]></title>
-      <url>/2017/10/29/new-test/</url>
-      <content type="html"><![CDATA[<script src="/assets/js/APlayer.min.js"> </script><p>just a test!</p>
-]]></content>
-      
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[首篇]]></title>
-      <url>/2017/10/29/%E9%A6%96%E7%AF%87/</url>
-      <content type="html"><![CDATA[<script src="/assets/js/APlayer.min.js"> </script><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>　　域名取自家里领导，本着不备案，不浪费域名的想法，搭了个个人博客，以后会在这里分享一些学习所得，兼做个人总结，温故而知新。<a id="more"></a></p>
-<h3 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h3><p>　　本网站IP借用自<a href="https://pages.github.com/" target="_blank" rel="external">GitHub Pages</a>，博客框架则来自<a href="https://hexo.io/zh-cn/index.html" target="_blank" rel="external">Hexo</a>，主题采用了<a href="http://theme-next.iissnan.com/" target="_blank" rel="external">Next</a>，同时采用<a href="https://www.qiniu.com/" target="_blank" rel="external">七牛云</a>存储，感谢这些项目和平台的帮助！</p>
-]]></content>
-      
-        <categories>
-            
-            <category> 杂感 </category>
-            
-        </categories>
-        
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[Hello World]]></title>
-      <url>/2017/10/29/hello-world/</url>
-      <content type="html"><![CDATA[<script src="/assets/js/APlayer.min.js"> </script><p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-]]></content>
-      
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[浅谈UML类图]]></title>
       <url>/2017/10/10/%E6%B5%85%E8%B0%88UML%E7%B1%BB%E5%9B%BE/</url>
       <content type="html"><![CDATA[<script src="/assets/js/APlayer.min.js"> </script><p><img src="http://orujzh93n.bkt.clouddn.com/uml.png" alt=""><a id="more"></a></p>
@@ -536,6 +494,22 @@
             <tag> mysql </tag>
             
         </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[首篇]]></title>
+      <url>/2017/06/20/%E9%A6%96%E7%AF%87/</url>
+      <content type="html"><![CDATA[<script src="/assets/js/APlayer.min.js"> </script><h3 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h3><p>　　域名取自家里领导，本着不备案，不浪费域名的想法，搭了个个人博客，以后会在这里分享一些学习所得，兼做个人总结，温故而知新。<a id="more"></a></p>
+<h3 id="感谢"><a href="#感谢" class="headerlink" title="感谢"></a>感谢</h3><p>　　本网站IP借用自<a href="https://pages.github.com/" target="_blank" rel="external">GitHub Pages</a>，博客框架则来自<a href="https://hexo.io/zh-cn/index.html" target="_blank" rel="external">Hexo</a>，主题采用了<a href="http://theme-next.iissnan.com/" target="_blank" rel="external">Next</a>，同时采用<a href="https://www.qiniu.com/" target="_blank" rel="external">七牛云</a>存储，感谢这些项目和平台的帮助！</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 杂感 </category>
+            
+        </categories>
+        
         
     </entry>
     
