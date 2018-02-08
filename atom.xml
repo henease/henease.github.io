@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://iwangru.com/"/>
-  <updated>2018-02-06T15:15:38.000Z</updated>
+  <updated>2018-02-08T16:28:25.000Z</updated>
   <id>http://iwangru.com/</id>
   
   <author>
@@ -15,6 +15,30 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>使用ORDER BY和LIMIT分页时的数据重复问题</title>
+    <link href="http://iwangru.com/2018/02/09/%E4%BD%BF%E7%94%A8ORDER-BY%E5%92%8CLIMIT%E5%88%86%E9%A1%B5%E6%97%B6%E7%9A%84%E6%95%B0%E6%8D%AE%E9%87%8D%E5%A4%8D%E9%97%AE%E9%A2%98/"/>
+    <id>http://iwangru.com/2018/02/09/使用ORDER-BY和LIMIT分页时的数据重复问题/</id>
+    <published>2018-02-08T16:17:35.000Z</published>
+    <updated>2018-02-08T16:28:25.000Z</updated>
+    
+    <content type="html"><![CDATA[<script src="/assets/js/APlayer.min.js"> </script><p><img src="http://orujzh93n.bkt.clouddn.com/its.jpg" alt=""><a id="more"></a></p><h4 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h4><p>　　今天测试在看板上给我提交了一个bug，他发现在翻页时，下一页会出现上一页出现过的数据。那么这是怎么回事呢？先看一下我的sql语句：</p><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">SELECT * FROM tb_settlement ORDER BY type,code LIMIT offset,pageSize</div></pre></td></tr></table></figure><p>　　好像没有啥问题，但是既然出现重复数据，那很显然就是LIMIT分页语句没有生效，或者未按我预想的方向生效。仔细想一下，这条sql语句的预想结果是首先根据ORDER BY先后按type和code进行排序，然后取出指定偏移位置之后的数据。但是事实并没有按这种结果显示，所以第一猜测就是ORDER BY和LIMIT之间没有协同好。</p><h4 id="MySQL官方手册说明"><a href="#MySQL官方手册说明" class="headerlink" title="MySQL官方手册说明"></a>MySQL官方手册说明</h4><p>　　我的mysql版本是5.6的，所以我查询了mysql5.6版本的官方手册，下面是ORDER BY和LIMIT的说明：</p><p>　　1、<a href="https://dev.mysql.com/doc/refman/5.6/en/order-by-optimization.html#order-by-filesort-in-memory" target="_blank" rel="external">ORDER BY Optimization</a></p><p>　　2、<a href="https://dev.mysql.com/doc/refman/5.6/en/limit-optimization.html" target="_blank" rel="external">LIMIT Query Optimization</a></p><h5 id="LIMIT的用法说明"><a href="#LIMIT的用法说明" class="headerlink" title="LIMIT的用法说明"></a>LIMIT的用法说明</h5><p>　　我们先不看ORDER BY，而是先看一下LIMIT的用法。</p><blockquote><p>If you combine <code>LIMIT</code>  <em>row_coun</em> with <code>ORDER BY</code>, MySQL stops sorting as soon as it has found the first <em>row_count</em> rows of the sorted result, rather than sorting the entire result. If ordering is done by using an index, this is very fast. If a filesort must be done, all rows that match the query without the <code>LIMIT</code> clause are selected, and most or all of them are sorted, before the first <em>row_count</em> are found. After the initial rows have been found, MySQL does not sort any remainder of the result set.</p></blockquote><p>　　这里主要的意思是说ORDER BY和LIMIT结合使用时，mysql在排序到LIMIT指定的数时就不会继续对之后的数据进行排序了，似乎对我们的问题没有多少帮助。接着往后看：</p><blockquote><p>If an index is not used for <code>ORDER BY</code> but a <code>LIMIT</code> clause is also present, the optimizer may be able to avoid using a merge file and sort the rows in memory using an in-memory <code>filesort</code> operation. For details, see <a href="https://dev.mysql.com/doc/refman/5.6/en/order-by-optimization.html#order-by-filesort-in-memory" target="_blank" rel="external">The In-Memory filesort Algorithm</a>.</p></blockquote><p>　　这句话似乎终于说到我们关心的东西了，当我们对非索引的列使用ORDER BY时，优化器会进行in-memory的文件排序操作。继续看下一句话：</p><blockquote><p>If multiple rows have identical values in the <code>ORDER BY</code> columns, the server is free to return those rows in any order, and may do so differently depending on the overall execution plan. In other words, the sort order of those rows is nondeterministic with respect to the nonordered columns.</p></blockquote><p>　　这里终于给我们下了个结论，当ORDER BY后的列出现重复值或者说相同值时，那这些数据就不会按确定的顺序列出，每次操作后显示的顺序可能并不一样。<br>　　到此可以舒口气了，不是我的bug，是mysql自己进行优化了。</p><h5 id="ORDER-BY的用法说明"><a href="#ORDER-BY的用法说明" class="headerlink" title="ORDER BY的用法说明"></a>ORDER BY的用法说明</h5><p>　　接下来再来看看ORDER BY Optimization，其实在说到in-memory时，mysql就给出了in-memory的算法链接了，这个链接就是到ORDER BY Optimization页面的。</p><blockquote><p>MySQL has multiple <code>filesort</code> algorithms for sorting and retrieving results. The original algorithm uses only the <code>ORDER BY</code> columns. The modified algorithm uses not just the <code>ORDER BY</code> columns, but all columns referenced by the query. There is also an algorithm for small result sets that sorts in memory using the sort buffer as a priority queue without a merge file.</p></blockquote><p>　　这里说，mysql其实有多种文件排序的算法，最初的算法是只根据ORDER BY指定的列排序，后来又修改为不只按ORDER BY指定的列，而是会把查询语句所有相关联的列都指定进来。而现在，对于小的结果集，mysql又采用priority queue来进行排序。<br>　　这里是这个算法的一些说明：</p><blockquote><p>The sort buffer has a size of <a href="https://dev.mysql.com/doc/refman/5.6/en/server-system-variables.html#sysvar_sort_buffer_size" target="_blank" rel="external"><code>sort_buffer_size</code></a>. If the sort elements for <em>N</em> rows are small enough to fit in the sort buffer (<em>M</em>+<em>N</em> rows if <em>M</em> was specified), the server can avoid using a merge file and performs an in-memory sort by treating the sort buffer as a priority queue:</p><ol><li>Scan the table, inserting the select list columns from each selected row in sorted order in the queue. If the queue is full, bump out the last row in the sort order.</li><li>Return the first <em>N</em> rows from the queue. (If <em>M</em> was specified, skip the first <em>M</em> rows and return the next <em>N</em> rows.)</li></ol><p>Absent that optimization, the server performs this operation by using a merge file for the sort:</p><ol><li>Scan the table, repeating these steps through the end of the table:<ul><li>Select rows until the sort buffer is filled.</li><li>Write the first <em>N</em> rows in the buffer (<em>M</em>+<em>N</em> rows if <em>M</em> was specified) to a merge file.</li></ul></li><li>Sort the merge file and return the first <em>N</em> rows. (If <em>M</em> was specified, skip the first <em>M</em> rows and return the next <em>N</em> rows.)</li></ol><p>The cost of the table-scan operation is the same for the queue and merge-file methods, so the optimizer chooses between methods based on other costs:</p><ul><li>The queue method involves more CPU for inserting rows into the queue in order.</li><li>The merge-file method has I/O costs to write and read the file and CPU cost to sort it.</li></ul><p>The optimizer considers the balance between these factors for particular values of <em>M</em>, <em>N</em>, and the row size.</p><p>An <code>ORDER BY</code> with and without <code>LIMIT</code> may return rows in different orders, as discussed in <a href="https://dev.mysql.com/doc/refman/5.6/en/limit-optimization.html" target="_blank" rel="external">Section 8.2.1.16, “LIMIT Query Optimization”</a>.</p></blockquote><p>　　上面主要对比了算法的排序开销，priority queue 使用了堆排序的排序方法，而堆排序是一种不是那么稳定的排序方法，对于相同的值可能排序出来的结果和读出来的数据顺序并不一致。</p><h4 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h4><p>　　综上，我们知道了出现这个问题的原因，那么解决起来就容易了。为了修改这个bug，我们需要把type和code修改为索引列，或者在code后面再加一个带索引的列，比如id，这样就可以达到我们所期望的ORDER BY和LIMIT协同的结果。</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;http://orujzh93n.bkt.clouddn.com/its.jpg&quot; alt=&quot;&quot;&gt;
+    
+    </summary>
+    
+      <category term="mysql" scheme="http://iwangru.com/categories/mysql/"/>
+    
+    
+      <category term="mysql" scheme="http://iwangru.com/tags/mysql/"/>
+    
+      <category term="sql" scheme="http://iwangru.com/tags/sql/"/>
+    
+  </entry>
   
   <entry>
     <title>Java_API CTP结算单乱码处理</title>
@@ -401,9 +425,9 @@
     
       <category term="IDEA" scheme="http://iwangru.com/tags/IDEA/"/>
     
-      <category term="spring" scheme="http://iwangru.com/tags/spring/"/>
-    
       <category term="mysql" scheme="http://iwangru.com/tags/mysql/"/>
+    
+      <category term="spring" scheme="http://iwangru.com/tags/spring/"/>
     
   </entry>
   
