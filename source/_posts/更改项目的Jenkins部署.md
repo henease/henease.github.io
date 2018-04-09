@@ -78,6 +78,3 @@ tags: [jenkins,linux]
 
 ![](http://orujzh93n.bkt.clouddn.com/console_output.jpg)
 
-
-
-##  
