@@ -77,4 +77,3 @@ tags: [jenkins,linux]
 　　此时再次执行构建，打开Console Output，会看到执行成功，查看具体项目的日志，确认服务已经启动。
 
 ![](http://orujzh93n.bkt.clouddn.com/console_output.jpg)
-
